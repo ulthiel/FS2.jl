@@ -1,4 +1,4 @@
-module CharacterLab
+module FS2
 
 using Oscar
 import Oscar: direct_product
