@@ -1,9 +1,21 @@
 name = "CharacterLab"
 uuid = "8fda04ab-fc1e-4728-b8ea-c1fe26d7d0db"
-authors = ["Ulrich Thiel"]
 version = "0.1.0"
+authors = ["Ulrich Thiel"]
+
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+FileWatching = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+Oscar = "f1435218-dba5-11e9-1e4d-f1a5fab5fc13"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 
 [compat]
+CSV = "0.10.16"
+Dates = "1.11.0"
+FileWatching = "1.11.0"
+Oscar = "1.8.0"
+ProgressMeter = "1.11.0"
 julia = "1.10"
 
 [extras]
