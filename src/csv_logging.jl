@@ -77,6 +77,13 @@ function _cpu_model()
     return isempty(info) ? missing : info[1].model
 end
 
+function _log_timestamp_utc()
+    return Dates.format(
+        Dates.now(Dates.UTC),
+        _CSV_LOG_DATETIME_FORMAT,
+    ) * "Z"
+end
+
 """
     log_metadata(
         ;
@@ -97,14 +104,10 @@ function log_metadata(
     ;
     packages::NamedTuple=(;),
     extra::NamedTuple=(;),
-    system::Bool=true,
-    memory::Bool=true,
+    system::Bool=false,
 )
     metadata = (
-        logged_at_utc = Dates.format(
-            Dates.now(Dates.UTC),
-            _CSV_LOG_DATETIME_FORMAT,
-        ) * "Z",
+        run_started_at_utc = _log_timestamp_utc(),
         julia_version = string(VERSION),
     )
 
@@ -119,12 +122,6 @@ function log_metadata(
             cpu_target = Sys.CPU_NAME,
             cpu_threads = Sys.CPU_THREADS,
             julia_threads = Threads.nthreads(),
-        ))
-    end
-
-    if memory
-        metadata = merge(metadata, (
-            process_peak_rss_bytes = Sys.maxrss(),
             memory_total_bytes = Sys.total_memory(),
         ))
     end
@@ -133,6 +130,28 @@ function log_metadata(
         metadata,
         _package_versions(packages),
         extra,
+    )
+end
+
+function log_metadata(
+    base::NamedTuple;
+    extra::NamedTuple=(;),
+    memory::Bool=false,
+)
+    metadata = (
+        logged_at_utc = _log_timestamp_utc(),
+    )
+
+    if memory
+        metadata = merge(metadata, (
+            process_peak_rss_bytes = Sys.maxrss(),
+        ))
+    end
+
+    return merge(
+        base,
+        extra,
+        metadata,
     )
 end
 
@@ -259,4 +278,10 @@ function _gap_package_version(name::AbstractString)
     return GAP.Globals.IsString(version) ?
         String(version) :
         missing
+end
+
+function reorder_fields(nt::NamedTuple, order::Tuple)
+    rest = Tuple(k for k in keys(nt) if k ∉ order)
+    names = (order..., rest...)
+    return NamedTuple{names}(nt[names])
 end
