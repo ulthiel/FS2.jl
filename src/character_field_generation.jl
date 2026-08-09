@@ -228,6 +228,7 @@ function scan_ctbllib_fs2(;
                     oscar=Oscar,
                 ),
                 extra=(
+                    fs2_git_revision=git_revision(FS2),
                     gap_version=String(GAP.Globals.GAPInfo.Version),
                     ctbllib_version=_gap_package_version("ctbllib"),
                     scan_id = scan_id,
