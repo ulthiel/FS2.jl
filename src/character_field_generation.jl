@@ -50,7 +50,7 @@ function is_fs2_with_data(
     findall=false,
     table_label::Union{Nothing,AbstractString}=nothing,
     findings_log_file::Union{Nothing,AbstractString}=nothing,
-    process_log_file::Union{Nothing,AbstractString}=nothing,
+    scan_log_file::Union{Nothing,AbstractString}=nothing,
     metadata::NamedTuple=(;)
 )
 
@@ -95,7 +95,7 @@ function is_fs2_with_data(
         )
     end
     
-    if !isnothing(findings_log_file) || !isnothing(process_log_file)
+    if !isnothing(findings_log_file) || !isnothing(scan_log_file)
         group_data = (
             table = isnothing(table_label) ?
                 identifier(T) :
@@ -166,13 +166,13 @@ function is_fs2_with_data(
         end
     end
 
-    if !isnothing(process_log_file)
+    if !isnothing(scan_log_file)
         process_data = ( 
             false_characters = length(false_list),
             findall = findall
         )
         append_csv_row(
-            process_log_file,
+            scan_log_file,
             merge(group_data, process_data),
             metadata=metadata,
         )
@@ -215,7 +215,7 @@ function scan_ctbllib_fs2(;
     if !isnothing(log_dir) 
         findings_log_file = joinpath(log_dir, scan_id, "findings.csv")
 
-        process_log_file = joinpath(log_dir, scan_id, "process.csv")
+        scan_log_file = joinpath(log_dir, scan_id, "scan.csv")
     end
 
     false_counter = 0
@@ -232,6 +232,7 @@ function scan_ctbllib_fs2(;
                     ctbllib_version=_gap_package_version("ctbllib"),
                     scan_id = scan_id,
                 ),
+                scan_total = length(names),
             )
         )
     end
@@ -248,7 +249,7 @@ function scan_ctbllib_fs2(;
             T; 
             q=q, 
             findall=findall, 
-            findings_log_file=findings_log_file, process_log_file=process_log_file,
+            findings_log_file=findings_log_file, scan_log_file=scan_log_file,
             metadata=metadata)
             false_counter = false_counter + length(T_false)
 
