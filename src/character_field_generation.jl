@@ -232,8 +232,8 @@ function scan_ctbllib_fs2(;
                     gap_version=String(GAP.Globals.GAPInfo.Version),
                     ctbllib_version=_gap_package_version("ctbllib"),
                     scan_id = scan_id,
+                    scan_total = length(names),
                 ),
-                scan_total = length(names),
             )
         )
     end
