@@ -9,7 +9,7 @@ using Test
 
         @test !res
         @test length(failures) == 1
-        @test only(failures).α_label == raw"\chi_{11}"
+        @test only(failures).α_label == "\\chi_{22}"
 
         G = small_group(189, 5)
         T = character_table(G)
