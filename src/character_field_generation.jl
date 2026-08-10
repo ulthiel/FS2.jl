@@ -243,7 +243,7 @@ function scan_ctbllib_fs2(;
 
         metadata = merge(
             metadata,
-            (scan_index = p.counter,),
+            (scan_index = p.counter + 1,),
         )
 
         res, T_false = is_fs2_with_data(
