@@ -250,7 +250,8 @@ function scan_ctbllib_fs2(;
             T; 
             q=q, 
             findall=findall, 
-            findings_log_file=findings_log_file, scan_log_file=scan_log_file,
+            findings_log_file=findings_log_file, 
+            scan_log_file=scan_log_file,
             metadata=metadata)
             false_counter = false_counter + length(T_false)
 
@@ -265,202 +266,87 @@ function scan_ctbllib_fs2(;
 
 end
 
-function scan_smallgroups_fs2(
-    n::Integer;
-    q::Integer=1,
-    show_progress=true,
-    findall=true,
-    log_file::Union{Nothing,AbstractString}=nothing,
-    base_metadata::NamedTuple=(;),
-
-    # Internal keywords used by the range method.
-    _progress=nothing,
-    _false_counter=Ref(0),
-)
-    n > 0 ||
-        throw(ArgumentError("the group order must be positive"))
-
-    has_small_groups(n) ||
-        throw(ArgumentError(
-            "groups of order $n are not available in the SmallGroups library",
-        ))
-
-    # p-groups satisfy FS2!
-    if is_prime_power(n)
-        return (
-            order = Int(n),
-            groups_scanned = 0,
-            failures_recorded = 0,
-        )
-    end
-
-    ngroups = Int(number_of_small_groups(n))
-    order_false_counter = 0
-
-    # A standalone fixed-order scan gets its own progress meter.
-    # A range scan passes a shared progress meter through _progress.
-    p = if !isnothing(_progress)
-        _progress
-    elseif show_progress
-        Progress(
-            ngroups;
-            desc="Scanning SmallGroups order $n",
-        )
-    else
-        nothing
-    end
-
-    # When called by the range method, base_metadata already contains
-    # the range scan_kind and must not be replaced.
-    if !isnothing(log_file) &&
-       !(:scan_kind in keys(base_metadata))
-
-        base_metadata = merge(
-            base_metadata,
-            log_metadata(
-                packages=(
-                    oscar=Oscar,
-                ),
-                extra=(
-                    gap_version=
-                        String(GAP.Globals.GAPInfo.Version),
-                    smallgrp_version=
-                        _gap_package_version("smallgrp"),
-                    scan_kind=
-                        "smallgroups-order-q$(q)",
-                    order_min=Int(n),
-                    order_max=Int(n),
-                    groups_total=ngroups,
-                    findall=findall,
-                ),
-            ),
-        )
-    end
-
-    for i in 1:ngroups
-        G = small_group(n, i)
-        T = character_table(G)
-
-        _, T_false = is_fs2_with_data(
-            T;
-            q=q,
-            findall=findall,
-            log_file=log_file,
-            table_label="SmallGroup($n,$i)",
-            base_metadata=base_metadata,
-        )
-
-        number_false = length(T_false)
-        order_false_counter += number_false
-        _false_counter[] += number_false
-
-        if !isnothing(p)
-            next!(
-                p;
-                showvalues=[
-                    (:group, "SmallGroup($n,$i)"),
-                    (:false, _false_counter[]),
-                ],
-            )
-        end
-    end
-
-    return (
-        order=Int(n),
-        groups_scanned=ngroups,
-        failures_recorded=order_false_counter,
-    )
-end
-
 
 function scan_smallgroups_fs2(
     orders::AbstractUnitRange{<:Integer};
-    q::Integer=1,
-    show_progress=true,
+    q::Integer=1, 
+    show_progress=true, 
     findall=true,
-    log_file::Union{Nothing,AbstractString}=nothing,
-    base_metadata::NamedTuple=(;),
+    log_dir::Union{Nothing,AbstractString}=nothing,
+    metadata::NamedTuple=(;)
 )
-    isempty(orders) &&
-        throw(ArgumentError("the order range must be nonempty"))
+    
+    # We can filter out prime powers because here FS_2 holds
+    orders_filtered = [ n for n in orders if !is_prime_power(n) ]
 
-    first(orders) > 0 ||
-        throw(ArgumentError("all group orders must be positive"))
+    for n in orders_filtered
+        if !has_small_groups(n) 
+            throw(ArgumentError(
+                "groups of order $n are not available in the SmallGroups library",
+            ))
+        end
+    end
 
-    unavailable = [
-        n for n in orders
-        if !has_small_groups(n)
-    ]
+    num_groups = 0
+    for n in orders_filtered 
+        num_groups += number_of_small_groups(n)
+    end
+    num_groups = Int(num_groups)
 
-    isempty(unavailable) ||
-        throw(ArgumentError(
-            "groups are not available in the SmallGroups library " *
-            "for the following order(s): " *
-            join(string.(unavailable), ", "),
-        ))
+    @info "Number of groups: "*string(num_groups)
 
-    orders_to_scan = [
-        n for n in orders
-        if !is_prime_power(n)
-    ]
+    scan_id = "smallgroups-"*string(first(orders))*"-"*string(last(orders))*"-fs2-q" * string(q) * (findall ? "-findall" : "")
 
-    total_groups = sum(
-        Int(number_of_small_groups(n))
-        for n in orders_to_scan
-    )
+    if !isnothing(log_dir) 
+        findings_log_file = joinpath(log_dir, scan_id, "findings.csv")
 
-    p = show_progress ?
-        Progress(
-            total_groups;
-            desc=(
-                "Scanning SmallGroups orders " *
-                "$(first(orders)):$(last(orders))"
-            ),
-        ) :
-        nothing
+        scan_log_file = joinpath(log_dir, scan_id, "scan.csv")
+    end
 
-    false_counter = Ref(0)
-
-    if !isnothing(log_file)
-        base_metadata = merge(
-            base_metadata,
+    false_counter = 0
+    p = Progress(num_groups; desc=scan_id)
+    
+    if !isnothing(log_dir) 
+        metadata = merge(metadata, 
             log_metadata(
                 packages=(
                     oscar=Oscar,
                 ),
                 extra=(
-                    gap_version=
-                        String(GAP.Globals.GAPInfo.Version),
-                    smallgrp_version=
-                        _gap_package_version("smallgrp"),
-                    scan_kind=
-                        "smallgroups-range-q$(q)",
-                    order_min=Int(first(orders)),
-                    order_max=Int(last(orders)),
-                    groups_total=total_groups,
-                    findall=findall,
+                    fs2_git_revision=git_revision(FS2),
+                    gap_version=String(GAP.Globals.GAPInfo.Version),
+                    scan_id = scan_id,
+                    scan_total = num_groups,
                 ),
-            ),
+            )
         )
     end
 
-    for n in orders
-        scan_smallgroups_fs2(
-            n;
-            q=q,
-            show_progress=false,
-            findall=findall,
-            log_file=log_file,
-            base_metadata=base_metadata,
-            _progress=p,
-            _false_counter=false_counter,
-        )
-    end
+    for n in orders_filtered
+        for i in 1:number_of_small_groups(n)
+            G = small_group(n, i)
+            T = character_table(G)
 
-    return (
-        order_min=Int(first(orders)),
-        order_max=Int(last(orders)),
-        groups_scanned=total_groups,
-        failures_recorded=false_counter[],
-    )
+            metadata = merge(
+                metadata,
+                (scan_index = p.counter + 1, group_id = (n,i),),
+            )
+
+            res, T_false = is_fs2_with_data(
+                T; 
+                q=q, 
+                findall=findall, 
+                findings_log_file=findings_log_file, scan_log_file=scan_log_file,
+                table_label="("*string(n)*","*string(i)*")",
+                metadata=metadata)
+                false_counter = false_counter + length(T_false)
+
+            if show_progress
+                next!(p; showvalues=[
+                    (:group, (n,i)),
+                    (:false, false_counter),
+                ])
+            end
+        end
+    end
 end

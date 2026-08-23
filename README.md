@@ -21,6 +21,12 @@ After installation, load the package with:
 using FS2
 ```
 
+## Testing
+
+```julia
+julia> scan_smallgroups_fs2(1:1000 ; log_dir="/home/thiel/FS2.jl/results/internal/")
+```
+
 ## References
 
 [1] Navarro, G. (2023). Problems on characters: Solvable groups. *Publicacions Matemàtiques, 67*(1), 173–198. https://doi.org/10.5565/PUBLMAT6712304
