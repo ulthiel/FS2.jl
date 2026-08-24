@@ -17,5 +17,10 @@ using Test
 
         @test !res
         @test !isempty(failures)
+
+        G = small_group(567, 36)
+        T = character_table(G)
+
+        @test !is_fs2(T)
     end
 end
