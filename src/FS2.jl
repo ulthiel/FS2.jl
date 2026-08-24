@@ -31,6 +31,7 @@ export is_fs2_with_data
 export number_of_groups
 export scan_ctbllib_fs2
 export scan_smallgroups_fs2
+export total_number_of_groups
 export total_number_of_small_groups
 
 end
