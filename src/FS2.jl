@@ -26,6 +26,7 @@ export galois_representatives
 export is_direct_product
 export is_fs
 export is_fs_with_data
+export is_fs2
 export is_fs2_with_data
 export scan_ctbllib_fs2
 export scan_smallgroups_fs2
