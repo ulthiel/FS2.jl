@@ -321,11 +321,7 @@ function scan_smallgroups_fs2(
         end
     end
 
-    num_groups = 0
-    for n in orders_filtered 
-        num_groups += number_of_small_groups(n)
-    end
-    num_groups = Int(num_groups)
+    num_groups = Int(number_of_small_groups(orders_filtered))
 
     @info "Number of groups: "*string(num_groups)
 
