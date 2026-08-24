@@ -234,6 +234,8 @@ function scan_ctbllib_fs2(;
 
     scan_id = "ctbllib-fs2-q" * string(q) * (findall ? "-findall" : "")
 
+    findings_log_file = nothing
+    scan_log_file = nothing
     if !isnothing(log_dir) 
         findings_log_file = joinpath(log_dir, scan_id, "findings.csv")
 
@@ -329,6 +331,8 @@ function scan_smallgroups_fs2(
 
     scan_id = "smallgroups-"*string(first(orders))*"-"*string(last(orders))*"-fs2-q" * string(q) * (findall ? "-findall" : "")
 
+    findings_log_file = nothing
+    scan_log_file = nothing
     if !isnothing(log_dir) 
         findings_log_file = joinpath(log_dir, scan_id, "findings.csv")
 
