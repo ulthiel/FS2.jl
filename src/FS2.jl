@@ -1,7 +1,6 @@
 module FS2
 
 using Oscar
-import Oscar: direct_product, number_of_small_groups
 
 using ProgressMeter
 
@@ -21,6 +20,7 @@ include("galois_conjugacy.jl")
 include("csv_logging.jl")
 
 export character_label
+export character_table_direct_product
 export direct_product_factors
 export galois_representatives
 export is_direct_product
@@ -29,5 +29,6 @@ export is_fs_with_data
 export is_fs2_with_data
 export scan_ctbllib_fs2
 export scan_smallgroups_fs2
+export total_number_of_small_groups
 
 end
