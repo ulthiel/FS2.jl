@@ -1,7 +1,7 @@
 module FS2
 
 using Oscar
-import Oscar: direct_product
+import Oscar: direct_product, number_of_small_groups
 
 using ProgressMeter
 
@@ -12,6 +12,7 @@ else
     _is_prime_power(n::Integer) = first(is_prime_power_with_data(n))
 end
 
+include("small_groups.jl")
 include("character_field_generation.jl")
 include("character_labels.jl")
 include("direct_products.jl")
