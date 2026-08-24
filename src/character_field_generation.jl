@@ -243,7 +243,7 @@ function scan_ctbllib_fs2(;
     end
 
     false_counter = 0
-    p = Progress(length(names); desc=scan_id)
+    p = show_progress ? Progress(length(names); desc=scan_id) : nothing
     
     if !isnothing(log_dir) 
         metadata = merge(metadata, 
@@ -262,12 +262,12 @@ function scan_ctbllib_fs2(;
         )
     end
 
-    for name in names
+    for (scan_index, name) in enumerate(names)
         T = character_table(name)
 
         metadata = merge(
             metadata,
-            (scan_index = p.counter + 1,),
+            (scan_index = scan_index,),
         )
 
         res, T_false = is_fs2_with_data(
@@ -340,7 +340,7 @@ function scan_smallgroups_fs2(
     end
 
     false_counter = 0
-    p = Progress(num_groups; desc=scan_id)
+    p = show_progress ? Progress(num_groups; desc=scan_id) : nothing
     
     if !isnothing(log_dir) 
         metadata = merge(metadata, 
@@ -358,14 +358,17 @@ function scan_smallgroups_fs2(
         )
     end
 
+    scan_index = 0
     for n in orders_filtered
         for i in 1:number_of_small_groups(n)
+            scan_index += 1
+
             G = small_group(n, i)
             T = character_table(G)
 
             metadata = merge(
                 metadata,
-                (scan_index = p.counter + 1, group_id = (n,i),),
+                (scan_index = scan_index, group_id = (n,i),),
             )
 
             res, T_false = is_fs2_with_data(
