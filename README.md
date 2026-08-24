@@ -21,10 +21,34 @@ After installation, load the package with:
 using FS2
 ```
 
+## Usage
+
+The main function is `is_fs2_with_data`, which tests the FS₂ property for a character table and returns both the result and data for any failures found. For example:
+
+```julia
+using Oscar, FS2
+
+T = character_table(:Symmetric, 5)
+is_fs2_with_data(T; q=2)
+```
+
+To scan the GAP Character Table Library with `q=2` and write the results to a log directory:
+
+```julia
+scan_ctbllib_fs2(q=2, log_dir="results")
+```
+
+To scan a range of orders in the GAP Small Groups Library:
+
+```julia
+scan_smallgroups_fs2(1:1000; q=2, log_dir="results")
+```
+
 ## Testing
 
 ```julia
-julia> scan_smallgroups_fs2(1:1000 ; log_dir="/home/thiel/FS2.jl/results/internal/")
+using Pkg
+Pkg.test("FS2")
 ```
 
 ## References
