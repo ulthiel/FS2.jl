@@ -97,9 +97,9 @@ function is_fs2_with_data(
         Cq2 = cyclic_group(q^2)
         TCq2 = character_table(Cq2)
         λ = first(χ for χ in TCq2 if is_faithful(χ))
-        TH = direct_product(T, TCq2)
+        TH = character_table_direct_product(T, TCq2)
         χ = Dict(
-            α => direct_product(TH, α, λ)
+            α => character_table_direct_product(TH, α, λ)
             for α in candidates
         )
     else
@@ -321,7 +321,7 @@ function scan_smallgroups_fs2(
         end
     end
 
-    num_groups = Int(number_of_small_groups(orders_filtered))
+    num_groups = Int(total_number_of_small_groups(orders_filtered))
 
     @info "Number of groups: "*string(num_groups)
 
