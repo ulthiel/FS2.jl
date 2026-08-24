@@ -1,8 +1,5 @@
-const _GNU50000_REVISION = "17dd20598432618810aa8b3627819c2116148154"
 const _GNU50000_URL =
-    "https://raw.githubusercontent.com/olexandr-konovalov/gnu/" *
-    _GNU50000_REVISION *
-    "/data/gnu50000.g"
+    "https://raw.githubusercontent.com/olexandr-konovalov/gnu/master/data/gnu50000.g"
 
 function _ensure_gnu50000_loaded()
     GAP.evalstr("IsBound(gnu50000);") == true && return
@@ -20,10 +17,7 @@ function _ensure_gnu50000_loaded()
         cache_dir = joinpath(GAP.Packages.DEFAULT_PKGDIR[], "fs2-data")
         mkpath(cache_dir)
 
-        data_file = joinpath(
-            cache_dir,
-            "gnu50000-" * _GNU50000_REVISION * ".g",
-        )
+        data_file = joinpath(cache_dir, "gnu50000.g")
 
         if !isfile(data_file)
             Downloads.download(_GNU50000_URL, data_file)
@@ -44,7 +38,7 @@ the precomputed `gnu50000` database from the GAP Gnu project.
 
 The database covers orders from 1 through 50000, but some entries are unknown.
 The data file is loaded lazily. If it is not already available from a local Gnu
-installation, FS2 downloads and caches a pinned copy on first use.
+installation, FS2 downloads it on first use and caches it permanently.
 """
 function number_of_groups(n::Integer)
     1 <= n <= 50000 ||
