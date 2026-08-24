@@ -57,6 +57,16 @@ function number_of_groups(n::Integer)
 end
 
 """
+    total_number_of_groups(orders::AbstractVector{<:Integer})
+
+Return the total known number of isomorphism classes of groups whose orders
+lie in `orders`.
+"""
+function total_number_of_groups(orders::AbstractVector{<:Integer})
+    return sum(number_of_groups, orders; init=ZZ(0))
+end
+
+"""
     total_number_of_small_groups(orders::AbstractVector{<:Integer})
 
 Return the total number of groups in the GAP SmallGroups library whose orders
