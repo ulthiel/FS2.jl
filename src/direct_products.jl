@@ -1,10 +1,9 @@
 """
-    direct_product(T1::Oscar.GAPGroupCharacterTable, T2::Oscar.GAPGroupCharacterTable)
-)
+    character_table_direct_product(T1::Oscar.GAPGroupCharacterTable, T2::Oscar.GAPGroupCharacterTable)
 
-The direct product of the character tables T1 and T2.
+The direct product of the character tables `T1` and `T2`.
 """
-function direct_product(
+function character_table_direct_product(
     T1::Oscar.GAPGroupCharacterTable,
     T2::Oscar.GAPGroupCharacterTable
 )
@@ -25,9 +24,8 @@ end
 
 """
     is_direct_product(T::Oscar.GAPGroupCharacterTable)
-)
 
-Returns true if T is a direct product of character tables.
+Returns true if `T` is a direct product of character tables.
 """
 function is_direct_product(T::Oscar.GAPGroupCharacterTable)
     return GAP.Globals.HasFactorsOfDirectProduct(GapObj(T))
@@ -35,7 +33,6 @@ end
 
 """
     direct_product_factors(T::Oscar.GAPGroupCharacterTable)
-)
 
 The factors of a direct product of character tables.
 """
@@ -53,14 +50,14 @@ function direct_product_factors(T::Oscar.GAPGroupCharacterTable)
 end
 
 """
-    direct_product(T::Oscar.GAPGroupCharacterTable, α::Oscar.GAPGroupClassFunction, β::Oscar.GAPGroupClassFunction)
+    character_table_direct_product(T::Oscar.GAPGroupCharacterTable, α::Oscar.GAPGroupClassFunction, β::Oscar.GAPGroupClassFunction)
 
 Return the external direct product `α ⊠ β` as a class function on `T`.
 
 The character table `T` must have been constructed as the direct product of
 the parent tables of `α` and `β`, in this order.
 """
-function direct_product(
+function character_table_direct_product(
     T::Oscar.GAPGroupCharacterTable,
     α::Oscar.GAPGroupClassFunction,
     β::Oscar.GAPGroupClassFunction,
