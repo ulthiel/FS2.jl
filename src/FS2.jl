@@ -5,8 +5,12 @@ import Oscar: direct_product
 
 using ProgressMeter
 
-# No idea why this isn't in OSCAR
-is_prime_power(n::Integer) = first(is_prime_power_with_data(n))
+# Compatibility helper until is_prime_power is available in all supported OSCAR versions
+if isdefined(Oscar, :is_prime_power)
+    _is_prime_power(n::Integer) = Oscar.is_prime_power(n)
+else
+    _is_prime_power(n::Integer) = first(is_prime_power_with_data(n))
+end
 
 include("character_field_generation.jl")
 include("character_labels.jl")
