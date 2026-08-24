@@ -68,7 +68,7 @@ function is_fs2_with_data(
     metadata::NamedTuple=(;)
 )
 
-    if q != 1 && !is_prime_power(q)
+    if q != 1 && !_is_prime_power(q)
         throw(ArgumentError("q must be 1 or a prime power"))
     end
 
@@ -311,7 +311,7 @@ function scan_smallgroups_fs2(
 )
     
     # We can filter out prime powers because here FS_2 holds
-    orders_filtered = [ n for n in orders if !is_prime_power(n) ]
+    orders_filtered = [ n for n in orders if !_is_prime_power(n) ]
 
     for n in orders_filtered
         if !has_small_groups(n) 
