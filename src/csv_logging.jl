@@ -70,6 +70,7 @@
 using CSV
 using Dates
 using FileWatching: Pidfile
+using Pkg
 using Sockets: gethostname
 
 const _CSV_LOG_THREAD_LOCK = ReentrantLock()
@@ -89,8 +90,10 @@ const _CSV_LOG_RESERVED_RECORD_COLUMNS = (
 Return the current Git revision of the repository containing `path`, or of the
 package containing `mod`.
 
-The result has the form `"0123456789ab"` or `"0123456789ab-dirty"`.
-Return `missing` if the revision cannot be determined.
+For a Git checkout, the result has the form `"0123456789ab"` or
+`"0123456789ab-dirty"`. For an installed package without Git metadata, its
+exact package-tree hash is returned in the form `"tree-0123456789ab"`.
+Return `missing` if neither revision can be determined.
 """
 function git_revision(path::AbstractString)
     path = abspath(path)
@@ -117,6 +120,20 @@ function git_revision(path::AbstractString)
     end
 end
 
+function _package_tree_revision(mod::Module)
+    info = try
+        get(Pkg.dependencies(), Base.PkgId(mod).uuid, nothing)
+    catch
+        nothing
+    end
+
+    isnothing(info) && return missing
+    isnothing(info.tree_hash) && return missing
+
+    tree_hash = string(info.tree_hash)
+    return "tree-" * first(tree_hash, min(12, length(tree_hash)))
+end
+
 function git_revision(mod::Module)
     root = try
         Base.pkgdir(mod)
@@ -124,8 +141,12 @@ function git_revision(mod::Module)
         nothing
     end
 
-    isnothing(root) && return missing
-    return git_revision(root)
+    if !isnothing(root)
+        revision = git_revision(root)
+        !ismissing(revision) && return revision
+    end
+
+    return _package_tree_revision(mod)
 end
 
 # Package metadata
