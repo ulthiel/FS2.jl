@@ -1,6 +1,6 @@
 name = "FS2"
 uuid = "8fda04ab-fc1e-4728-b8ea-c1fe26d7d0db"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Ulrich Thiel"]
 
 [deps]
@@ -16,7 +16,7 @@ Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 CSV = "0.10.16"
 Dates = "1.10.0"
 FileWatching = "1.10.0"
-Oscar = "1.8.0"
+Oscar = "1.8.1"
 Pkg = "1.10.0"
 ProgressMeter = "1.11.0"
 Sockets = "1.10.0"
