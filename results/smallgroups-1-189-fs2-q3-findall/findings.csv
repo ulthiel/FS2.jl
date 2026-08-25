@@ -1,5 +1,5 @@
 table,G_order,q,α_position,α_label,α_degree,α_faithful,α_conductor,α_char_field_degree,χ_odd_degree,χ_two_rational,χ_conductor,χ_char_field_degree,χ_max_value_degree,G_solvable,run_started_at_utc,julia_version,oscar_version,fs2_git_revision,gap_version,scan_id,scan_total,scan_index,group_id,logged_at_utc
-"(189,4)",189,3,15,,3,true,63,12,true,true,63,36,12,true,2026-08-24T10:05:04.033Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-189-fs2-q3-findall,1692,1683,"(189, 4)",2026-08-24T10:24:12.994Z
-"(189,5)",189,3,15,,3,true,63,12,true,true,63,36,12,true,2026-08-24T10:05:04.033Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-189-fs2-q3-findall,1692,1684,"(189, 5)",2026-08-24T10:24:13.749Z
-"(189,7)",189,3,15,,3,true,21,12,true,true,63,36,12,true,2026-08-24T10:05:04.033Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-189-fs2-q3-findall,1692,1686,"(189, 7)",2026-08-24T10:24:14.344Z
-"(189,8)",189,3,15,,3,true,21,12,true,true,63,36,12,true,2026-08-24T10:05:04.033Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-189-fs2-q3-findall,1692,1687,"(189, 8)",2026-08-24T10:24:14.485Z
+"(189,4)",189,3,15,,3,true,63,12,true,true,63,36,12,true,2026-08-24T10:05:04.033Z,1.12.6,1.8.1,33ecdf228faa,4.16.1,smallgroups-1-189-fs2-q3-findall,1692,1683,"(189, 4)",2026-08-24T10:24:12.994Z
+"(189,5)",189,3,15,,3,true,63,12,true,true,63,36,12,true,2026-08-24T10:05:04.033Z,1.12.6,1.8.1,33ecdf228faa,4.16.1,smallgroups-1-189-fs2-q3-findall,1692,1684,"(189, 5)",2026-08-24T10:24:13.749Z
+"(189,7)",189,3,15,,3,true,21,12,true,true,63,36,12,true,2026-08-24T10:05:04.033Z,1.12.6,1.8.1,33ecdf228faa,4.16.1,smallgroups-1-189-fs2-q3-findall,1692,1686,"(189, 7)",2026-08-24T10:24:14.344Z
+"(189,8)",189,3,15,,3,true,21,12,true,true,63,36,12,true,2026-08-24T10:05:04.033Z,1.12.6,1.8.1,33ecdf228faa,4.16.1,smallgroups-1-189-fs2-q3-findall,1692,1687,"(189, 8)",2026-08-24T10:24:14.485Z
