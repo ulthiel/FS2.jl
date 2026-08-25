@@ -1,0 +1,7 @@
+table,G_order,q,α_position,α_label,α_degree,α_faithful,α_conductor,α_char_field_degree,χ_odd_degree,χ_two_rational,χ_conductor,χ_char_field_degree,χ_max_value_degree,G_solvable,run_started_at_utc,julia_version,oscar_version,fs2_git_revision,gap_version,scan_id,scan_total,scan_index,group_id,logged_at_utc
+"(480,71)",480,1,44,,4,true,15,8,false,true,15,8,4,true,2026-08-24T10:02:03.008Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-567-fs2-q1-findall,34886,32033,"(480, 71)",2026-08-24T14:53:09.668Z
+"(480,72)",480,1,44,,4,true,15,8,false,true,15,8,4,true,2026-08-24T10:02:03.008Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-567-fs2-q1-findall,34886,32034,"(480, 72)",2026-08-24T14:53:09.999Z
+"(480,73)",480,1,44,,4,true,15,8,false,true,15,8,4,true,2026-08-24T10:02:03.008Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-567-fs2-q1-findall,34886,32035,"(480, 73)",2026-08-24T14:53:10.495Z
+"(480,1125)",480,1,50,,4,true,15,8,false,true,15,8,4,true,2026-08-24T10:02:03.008Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-567-fs2-q1-findall,34886,33087,"(480, 1125)",2026-08-24T14:55:57.981Z
+"(567,7)",567,1,43,,3,true,63,36,true,true,63,36,12,true,2026-08-24T10:02:03.008Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-567-fs2-q1-findall,34886,34844,"(567, 7)",2026-08-24T19:17:31.371Z
+"(567,36)",567,1,43,,3,true,63,36,true,true,63,36,12,true,2026-08-24T10:02:03.008Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-567-fs2-q1-findall,34886,34873,"(567, 36)",2026-08-24T19:18:27.557Z
