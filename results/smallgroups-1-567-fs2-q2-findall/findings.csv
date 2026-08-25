@@ -1,0 +1,3 @@
+table,G_order,q,α_position,α_label,α_degree,α_faithful,α_conductor,α_char_field_degree,χ_odd_degree,χ_two_rational,χ_conductor,χ_char_field_degree,χ_max_value_degree,G_solvable,run_started_at_utc,julia_version,oscar_version,fs2_git_revision,gap_version,scan_id,scan_total,scan_index,group_id,logged_at_utc
+"(567,7)",567,2,43,,3,true,63,36,true,false,252,72,24,true,2026-08-24T10:03:33.661Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-567-fs2-q2-findall,34886,34844,"(567, 7)",2026-08-24T20:53:29.561Z
+"(567,36)",567,2,43,,3,true,63,36,true,false,252,72,24,true,2026-08-24T10:03:33.661Z,1.12.6,1.8.1,,4.16.1,smallgroups-1-567-fs2-q2-findall,34886,34873,"(567, 36)",2026-08-24T20:54:50.598Z
