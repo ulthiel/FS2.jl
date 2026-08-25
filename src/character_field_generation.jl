@@ -347,6 +347,7 @@ function scan_smallgroups_fs2(
                 extra=(
                     fs2_git_revision=git_revision(FS2),
                     gap_version=String(GAP.Globals.GAPInfo.Version),
+                    smallgrp_version=_gap_package_version("smallgrp"),
                     scan_id = scan_id,
                     scan_total = num_groups,
                 ),
