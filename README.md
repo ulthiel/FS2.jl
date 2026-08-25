@@ -6,13 +6,17 @@ We call this the **FS₂ problem**, where **FS** stands for character *field* ge
 
 The package provides functionality for testing the FS₂ property for individual characters and character tables, together with tools for systematic searches in the GAP Character Table Library and the Small Groups Library. It also contains code used for the computational investigations in [2].
 
+The complete computational output accompanying [2] is included in the
+[`results`](results) directory. See [`results/README.md`](results/README.md)
+for the scope, format, provenance, and summary of these data.
+
 ## Installation
 
 FS2.jl is not registered in the Julia General registry. Install it directly from GitHub using Julia's package manager:
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/ulthiel/FS2.jl")
+Pkg.add(url="https://github.com/ulthiel/FS2.jl", rev="v1.0.0")
 ```
 
 After installation, load the package with:
