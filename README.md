@@ -14,7 +14,14 @@ for the scope, format, provenance, and summary of these data.
 
 ## Installation
 
-FS2.jl is not registered in the Julia General registry. Install it directly from GitHub using Julia's package manager:
+FS2.jl is not registered in the Julia General registry. To install the current `main` branch directly from GitHub using Julia's package manager:
+
+```julia
+using Pkg
+Pkg.add(url="https://github.com/ulthiel/FS2.jl")
+```
+
+To install a specific release or revision, pass `rev`; for example:
 
 ```julia
 using Pkg
