@@ -3,6 +3,35 @@ using Oscar
 using Test
 
 @testset "FS2.jl" begin
+    @testset "Conductor attainment" begin
+        # Linear characters attain their entire character field at an image
+        # generator. Rational characters (including the trivial one) have
+        # conductor 1, attained at every value, including zero.
+        for G in (cyclic_group(1), cyclic_group(6), abelian_group([2, 4]),
+                  symmetric_group(3))
+            @test is_cs(G)
+        end
+        T = character_table(cyclic_group(6))
+        χ = first(χ for χ in T if is_faithful(χ))
+        # Q(zeta_6) = Q(zeta_3): root order is not the conductor.
+        @test conductor(χ) == 3
+        @test is_cs(χ)
+
+        # Thiel, arXiv:2608.02266v1, §2: SmallGroup(32,15) fails FS.
+        # CS nevertheless holds for every 2-group: the value conductors are
+        # powers of 2, so their lcm is their maximum and is attained.
+        T = character_table(small_group(32, 15))
+        χ = first(χ for χ in T if !is_fs(χ))
+        @test is_cs(χ)
+        @test is_cs(T)
+
+        # Thiel, arXiv:2608.02266v1, §2 records this CS counterexample.
+        G = small_group(960, 730)
+        T = character_table(G)
+        @test !is_cs(T)
+        @test !is_cs(G)
+    end
+
     @testset "Group shortcut" begin
         # Every irreducible character of a finite abelian group is linear.
         # Its image is cyclic, so one value generates its character field;

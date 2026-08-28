@@ -36,6 +36,16 @@ T = character_table(:Symmetric, 5)
 is_fs2_with_data(T; q=2)
 ```
 
+To test whether a character's conductor is attained by a single value, use
+`is_cs(χ)`. For a character table or finite group, `is_cs` tests every
+irreducible character, without a degree or rationality restriction:
+
+```julia
+G = symmetric_group(5)
+is_cs(G)                    # true
+is_cs(character_table(G))    # true
+```
+
 To scan the GAP Character Table Library with `q=2` and write the results to a log directory:
 
 ```julia

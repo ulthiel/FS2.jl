@@ -13,6 +13,7 @@ end
 
 include("small_groups.jl")
 include("character_field_generation.jl")
+include("conductor_attainment.jl")
 include("character_labels.jl")
 include("direct_products.jl")
 include("galois_conjugacy.jl")
@@ -24,6 +25,7 @@ export character_table_direct_product
 export direct_product_factors
 export galois_representatives
 export is_direct_product
+export is_cs
 export is_fs
 export is_fs_with_data
 export is_fs2
