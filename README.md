@@ -36,6 +36,10 @@ T = character_table(:Symmetric, 5)
 is_fs2_with_data(T; q=2)
 ```
 
+Use `is_fs(χ)` to test a single character for field generation by one value.
+`is_fs(T)` and `is_fs(G)` test every irreducible character of a character
+table or finite group, without the degree or rationality restriction of FS₂.
+
 To test whether a character's conductor is attained by a single value, use
 `is_cs(χ)`. For a character table or finite group, `is_cs` tests every
 irreducible character, without a degree or rationality restriction:
@@ -45,6 +49,15 @@ G = symmetric_group(5)
 is_cs(G)                    # true
 is_cs(character_table(G))    # true
 ```
+
+Use `is_fs_with_data(T; findall=true)` or `is_cs_with_data(T; findall=true)`
+to return `(result, failures)` with diagnostics for every failing Galois
+orbit. Both also accept a finite group in place of `T`. By default they
+stop after the first failure. They support the same `table_label`,
+`findings_log_file`, `scan_log_file`, and `metadata` logging keywords as
+`is_fs2_with_data`, but have no `q` parameter or character restrictions.
+For a single character, `is_cs_with_data(χ)` returns the result together
+with `char_conductor` and `max_value_conductor`.
 
 To scan the GAP Character Table Library with `q=2` and write the results to a log directory:
 

@@ -26,6 +26,7 @@ export direct_product_factors
 export galois_representatives
 export is_direct_product
 export is_cs
+export is_cs_with_data
 export is_fs
 export is_fs_with_data
 export is_fs2

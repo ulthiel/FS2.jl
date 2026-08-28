@@ -1,26 +1,36 @@
 using FS2
 using Oscar
 using Test
+using FS2: CSV
 
 @testset "FS2.jl" begin
-    @testset "Conductor attainment" begin
+    @testset "Field generation and conductor attainment" begin
         # Linear characters attain their entire character field at an image
         # generator. Rational characters (including the trivial one) have
         # conductor 1, attained at every value, including zero.
         for G in (cyclic_group(1), cyclic_group(6), abelian_group([2, 4]),
                   symmetric_group(3))
+            @test is_fs(character_table(G))
+            @test is_fs(G)
             @test is_cs(G)
+            @test is_fs_with_data(G) == (true, NamedTuple[])
+            @test is_cs_with_data(G) == (true, NamedTuple[])
         end
         T = character_table(cyclic_group(6))
         χ = first(χ for χ in T if is_faithful(χ))
         # Q(zeta_6) = Q(zeta_3): root order is not the conductor.
         @test conductor(χ) == 3
         @test is_cs(χ)
+        @test is_cs_with_data(χ) == (true, (char_conductor=3, max_value_conductor=3))
 
         # Thiel, arXiv:2608.02266v1, §2: SmallGroup(32,15) fails FS.
         # CS nevertheless holds for every 2-group: the value conductors are
         # powers of 2, so their lcm is their maximum and is attained.
-        T = character_table(small_group(32, 15))
+        G = small_group(32, 15)
+        T = character_table(G)
+        @test !is_fs(T)
+        @test !is_fs(G)
+        @test is_fs2(G) # FS must also test the even-degree, non-2-rational characters.
         χ = first(χ for χ in T if !is_fs(χ))
         @test is_cs(χ)
         @test is_cs(T)
@@ -30,6 +40,67 @@ using Test
         T = character_table(G)
         @test !is_cs(T)
         @test !is_cs(G)
+    end
+
+    @testset "Attainment diagnostics and logging" begin
+        # Known failures: Thiel, arXiv:2608.02266v1, §2. The CS example is
+        # also in Boltje et al., arXiv:2507.19618v1, §9 (after Theorem 9.6).
+        for (test_data, group_id) in ((is_fs_with_data, (32, 15)),
+                                      (is_cs_with_data, (960, 730)))
+            G = small_group(group_id...)
+            res, group_failures = test_data(G; findall=true)
+            @test !res
+            @test !isempty(group_failures)
+
+            # Tensoring a failing character with each of the two rational
+            # characters of C2 preserves its value fields/conductors and
+            # gives distinct Galois orbits. Thus at least two failures must
+            # be found, making findall and early stopping distinguishable.
+            T = character_table_direct_product(character_table(G), character_table(cyclic_group(2)))
+            res, failures = test_data(T; findall=true)
+            @test !res
+            @test length(failures) >= 2
+            @test test_data(T) == (false, failures[1:1])
+            @test length(unique(f.χ_position for f in failures)) == length(failures)
+            for f in failures
+                χ = T[f.χ_position]
+                @test f.χ_label == character_label(χ)
+                @test f.χ_degree == degree(ZZRingElem, χ)
+                @test f.χ_conductor == conductor(χ)
+                res, data = test_data(χ)
+                @test !res
+                if test_data === is_fs_with_data
+                    @test f.χ_char_field_degree == data.char_field_degree
+                    @test f.χ_max_value_degree == data.max_value_degree
+                else
+                    @test f.χ_conductor == data.char_conductor
+                    @test f.χ_max_value_conductor == data.max_value_conductor
+                end
+            end
+
+            mktempdir() do dir
+                findings = joinpath(dir, "findings.csv")
+                scan = joinpath(dir, "scan.csv")
+                for findall in (false, true)
+                    @test test_data(T; findall=findall, table_label="example",
+                        findings_log_file=findings, scan_log_file=scan,
+                        metadata=(run="test",)) == (false, findall ? failures : failures[1:1])
+                end
+                @test test_data(character_table(cyclic_group(1));
+                    findings_log_file=findings, scan_log_file=scan,
+                    metadata=(run="test",)) == (true, NamedTuple[])
+                rows = CSV.File(findings)
+                @test length(rows) == 1 + length(failures)
+                @test all(r -> r.table == "example" && r.run == "test", rows)
+                @test rows.χ_position == [first(failures).χ_position; getproperty.(failures, :χ_position)]
+                scans = CSV.File(scan)
+                @test scans.false_characters == [1, length(failures), 0]
+                @test scans.findall == [false, true, false]
+                @test scans.G_order == [2 * group_id[1], 2 * group_id[1], 1]
+            end
+            @test_throws MethodError test_data(T; q=2)
+            @test_throws ArgumentError test_data(character_table(symmetric_group(3), 2))
+        end
     end
 
     @testset "Group shortcut" begin

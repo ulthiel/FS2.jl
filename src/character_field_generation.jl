@@ -33,8 +33,110 @@ function is_fs_with_data(χ::Oscar.GAPGroupClassFunction)
     )
 end
 
+"""
+    is_fs(χ::Oscar.GAPGroupClassFunction)
+
+Test whether the character field of the ordinary character `χ` is generated
+by a single character value. Return only the Boolean result of
+[`is_fs_with_data`](@ref).
+"""
 is_fs(χ::Oscar.GAPGroupClassFunction) =
     first(is_fs_with_data(χ))
+
+"""
+    is_fs(T::Oscar.GAPGroupCharacterTable)
+    is_fs(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup})
+
+Test the FS property for every irreducible character of the ordinary
+character table `T`. No degree or rationality restriction is imposed.
+For a finite group `G`, this is a shortcut for `is_fs(character_table(G))`.
+"""
+is_fs(T::Oscar.GAPGroupCharacterTable) = all(is_fs, T)
+
+is_fs(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}) =
+    is_fs(character_table(G))
+
+"""
+    is_fs_with_data(T::Oscar.GAPGroupCharacterTable; findall=false, ...)
+    is_fs_with_data(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}; kwargs...)
+
+Test FS for all irreducible characters, up to Galois conjugacy, and return
+`(res, failures)`. Stop after the first failure unless `findall=true`.
+Each failure records `χ_position`, `χ_label`, `χ_degree`, `χ_faithful`,
+`χ_odd_degree`, `χ_two_rational`, `χ_conductor`, `χ_char_field_degree`, and
+`χ_max_value_degree`.
+
+As in [`is_fs2_with_data`](@ref), the optional keywords `table_label`,
+`findings_log_file`, `scan_log_file`, and `metadata` control CSV logging.
+The scan's `false_characters` counts failing Galois representatives.
+There is no `q` parameter or degree/rationality restriction.
+For a finite group, use its ordinary character table.
+"""
+function is_fs_with_data(T::Oscar.GAPGroupCharacterTable; kwargs...)
+    return _character_attainment_with_data(T; kwargs...) do χ
+        res, data = is_fs_with_data(χ)
+        return res, (
+            χ_char_field_degree = data.char_field_degree,
+            χ_max_value_degree = data.max_value_degree,
+        )
+    end
+end
+
+is_fs_with_data(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}; kwargs...) =
+    is_fs_with_data(character_table(G); kwargs...)
+
+# FS and CS are invariant under Galois conjugacy: conjugating a character
+# conjugates its value fields, preserving their degrees and conductors.
+function _character_attainment_with_data(
+    test_with_data,
+    T::Oscar.GAPGroupCharacterTable;
+    findall=false,
+    table_label::Union{Nothing,AbstractString}=nothing,
+    findings_log_file::Union{Nothing,AbstractString}=nothing,
+    scan_log_file::Union{Nothing,AbstractString}=nothing,
+    metadata::NamedTuple=(;),
+)
+    candidates = galois_representatives(T)
+    failures = NamedTuple[]
+    if !isnothing(findings_log_file) || !isnothing(scan_log_file)
+        group_data = (
+            table = isnothing(table_label) ? identifier(T) : String(table_label),
+            G_order = order(T),
+            G_solvable = is_solvable(T),
+        )
+    end
+
+    for χ in candidates
+        res, diagnostic = test_with_data(χ)
+        res && continue
+
+        c = conductor(χ)
+        data = merge((
+            χ_position = findfirst(==(χ), T),
+            χ_label = character_label(χ),
+            χ_degree = degree(ZZRingElem, χ),
+            χ_faithful = is_faithful(χ),
+            χ_odd_degree = is_odd_degree(χ),
+            χ_two_rational = is_odd(c),
+            χ_conductor = c,
+        ), diagnostic)
+        push!(failures, data)
+
+        if !isnothing(findings_log_file)
+            append_csv_row(findings_log_file, merge(group_data, data); metadata=metadata)
+        end
+        findall || break
+    end
+
+    if !isnothing(scan_log_file)
+        append_csv_row(
+            scan_log_file,
+            merge(group_data, (false_characters=length(failures), findall=findall));
+            metadata=metadata,
+        )
+    end
+    return isempty(failures), failures
+end
 
 function is_odd_degree(χ::Oscar.GAPGroupClassFunction)
     return is_odd(degree(ZZRingElem, χ))

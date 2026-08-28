@@ -12,9 +12,28 @@ character field generation of odd-degree characters*, §2,
 [arXiv:2608.02266](https://arxiv.org/abs/2608.02266).
 It is weaker than [`is_fs`](@ref): equal conductors need not mean equal fields.
 """
-function is_cs(χ::Oscar.GAPGroupClassFunction)
+is_cs(χ::Oscar.GAPGroupClassFunction) = first(is_cs_with_data(χ))
+
+"""
+    is_cs_with_data(χ::Oscar.GAPGroupClassFunction)
+
+Return `(res, data)`, where `res` tests conductor attainment as in
+[`is_cs`](@ref). The named tuple `data` contains `char_conductor` and
+`max_value_conductor`, the largest conductor among the character values.
+Every value conductor divides the character conductor, so a successful
+test can stop as soon as the latter is attained.
+"""
+function is_cs_with_data(χ::Oscar.GAPGroupClassFunction)
     c = conductor(χ)
-    return any(x -> conductor(x) == c, values(χ))
+    max_c = 0
+    for x in values(χ)
+        cx = conductor(x)
+        max_c = max(max_c, cx)
+        if cx == c
+            return true, (char_conductor=c, max_value_conductor=c)
+        end
+    end
+    return false, (char_conductor=c, max_value_conductor=max_c)
 end
 
 """
@@ -29,3 +48,28 @@ is_cs(T::Oscar.GAPGroupCharacterTable) = all(is_cs, T)
 
 is_cs(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}) =
     is_cs(character_table(G))
+
+"""
+    is_cs_with_data(T::Oscar.GAPGroupCharacterTable; findall=false, ...)
+    is_cs_with_data(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}; kwargs...)
+
+Test CS for all irreducible characters, up to Galois conjugacy, and return
+`(res, failures)`. Stop after the first failure unless `findall=true`.
+Each failure records `χ_position`, `χ_label`, `χ_degree`, `χ_faithful`,
+`χ_odd_degree`, `χ_two_rational`, `χ_conductor`, and `χ_max_value_conductor`.
+
+As in [`is_fs2_with_data`](@ref), the optional keywords `table_label`,
+`findings_log_file`, `scan_log_file`, and `metadata` control CSV logging.
+The scan's `false_characters` counts failing Galois representatives.
+There is no `q` parameter or degree/rationality restriction.
+For a finite group, use its ordinary character table.
+"""
+function is_cs_with_data(T::Oscar.GAPGroupCharacterTable; kwargs...)
+    return _character_attainment_with_data(T; kwargs...) do χ
+        res, data = is_cs_with_data(χ)
+        return res, (χ_max_value_conductor=data.max_value_conductor,)
+    end
+end
+
+is_cs_with_data(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}; kwargs...) =
+    is_cs_with_data(character_table(G); kwargs...)
