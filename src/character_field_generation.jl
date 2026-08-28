@@ -197,6 +197,14 @@ function is_fs2_with_data(
 end
 
 
+"""
+    is_fs2(T::Oscar.GAPGroupCharacterTable; q=1)
+    is_fs2(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}; q=1)
+
+Test the FS₂ property using [`is_fs2_with_data`](@ref), returning only the
+Boolean result. For a finite group `G`, this is a shortcut for
+`is_fs2(character_table(G); q=q)` using its ordinary character table.
+"""
 function is_fs2(
     T::Oscar.GAPGroupCharacterTable; 
     q::Integer=1
@@ -207,6 +215,9 @@ function is_fs2(
     return res
 
 end
+
+is_fs2(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}; q::Integer=1) =
+    is_fs2(character_table(G); q=q)
 
 """
     scan_ctbllib_fs2(; q=1, show_progress=true, findall=true, log_dir=nothing, metadata=(;))
