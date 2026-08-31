@@ -73,3 +73,93 @@ end
 
 is_cs_with_data(G::Union{Oscar.GAPGroup, Oscar.FinGenAbGroup}; kwargs...) =
     is_cs_with_data(character_table(G); kwargs...)
+
+"""
+    scan_smallgroups_cs(orders::AbstractUnitRange{<:Integer};
+                        show_progress=true, findall=true,
+                        log_dir=nothing, metadata=(;))
+
+Scan the GAP SmallGroups library for all groups whose orders lie in `orders`
+and test CS with [`is_cs_with_data`](@ref). Prime-power orders are skipped:
+groups of prime-power order are nilpotent, and CS holds for nilpotent groups.
+
+If `log_dir` is given, failure records and per-group scan records are written
+to `findings.csv` and `scan.csv` below a scan-specific directory. The scan
+directory is named `smallgroups-FIRST-LAST-cs`, with `-findall` appended when
+`findall=true`.
+"""
+function scan_smallgroups_cs(
+    orders::AbstractUnitRange{<:Integer};
+    show_progress=true,
+    findall=true,
+    log_dir::Union{Nothing,AbstractString}=nothing,
+    metadata::NamedTuple=(;),
+)
+    # Every p-group is nilpotent, and CS holds for nilpotent groups; see
+    # Boltje--Kleshchev--Navarro--Tiep, arXiv:2507.19618v1, after Theorem 9.6.
+    orders_filtered = [n for n in orders if !_is_prime_power(n)]
+
+    for n in orders_filtered
+        has_small_groups(n) || throw(ArgumentError(
+            "groups of order $n are not available in the SmallGroups library",
+        ))
+    end
+
+    num_groups = Int(total_number_of_small_groups(orders_filtered))
+    @info "Number of groups: " * string(num_groups)
+
+    scan_id = "smallgroups-" * string(first(orders)) * "-" *
+              string(last(orders)) * "-cs" * (findall ? "-findall" : "")
+    findings_log_file = isnothing(log_dir) ? nothing :
+        joinpath(log_dir, scan_id, "findings.csv")
+    scan_log_file = isnothing(log_dir) ? nothing :
+        joinpath(log_dir, scan_id, "scan.csv")
+
+    false_counter = 0
+    # Include the separator in the measured description: otherwise ProgressMeter
+    # adds it after sizing the bar, overflowing one column for long day/hour ETAs.
+    progress = show_progress ? Progress(num_groups; desc=scan_id * " ") : nothing
+
+    if !isnothing(log_dir)
+        metadata = merge(metadata, log_metadata(
+            packages=(oscar=Oscar,),
+            extra=(
+                fs2_git_revision=git_revision(FS2),
+                gap_version=String(GAP.Globals.GAPInfo.Version),
+                smallgrp_version=_gap_package_version("smallgrp"),
+                scan_id=scan_id,
+                scan_total=num_groups,
+            ),
+        ))
+    end
+
+    scan_index = 0
+    for n in orders_filtered
+        for i in 1:number_of_small_groups(n)
+            scan_index += 1
+            T = character_table(small_group(n, i))
+            row_metadata = merge(metadata, (
+                scan_index=scan_index,
+                group_id=(n, i),
+            ))
+            _, failures = is_cs_with_data(
+                T;
+                findall=findall,
+                findings_log_file=findings_log_file,
+                scan_log_file=scan_log_file,
+                table_label="(" * string(n) * "," * string(i) * ")",
+                metadata=row_metadata,
+            )
+            false_counter += length(failures)
+
+            if show_progress
+                next!(progress; showvalues=[
+                    (:group, (n, i)),
+                    (:false, false_counter),
+                ])
+            end
+        end
+    end
+
+    return nothing
+end

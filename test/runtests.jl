@@ -103,6 +103,33 @@ using FS2: CSV
         end
     end
 
+    @testset "SmallGroups CS scan" begin
+        mktempdir() do dir
+            # Orders 4 and 5 are skipped because they are prime powers. There
+            # are exactly two groups of order 6, both of which satisfy FS and
+            # hence CS (C6 is abelian and S3 is rational).
+            @test scan_smallgroups_cs(
+                4:6;
+                show_progress=false,
+                log_dir=dir,
+                metadata=(run="test",),
+            ) === nothing
+
+            scan_dir = joinpath(dir, "smallgroups-4-6-cs-findall")
+            @test !isfile(joinpath(scan_dir, "findings.csv"))
+            rows = CSV.File(joinpath(scan_dir, "scan.csv"))
+            @test length(rows) == 2
+            @test rows.false_characters == [0, 0]
+            @test rows.scan_index == [1, 2]
+            @test rows.scan_total == [2, 2]
+            @test rows.G_order == [6, 6]
+            @test all(r -> r.scan_id == "smallgroups-4-6-cs-findall", rows)
+            @test all(r -> r.run == "test", rows)
+        end
+
+        @test_throws MethodError scan_smallgroups_cs(4:6; q=2)
+    end
+
     @testset "Group shortcut" begin
         # Every irreducible character of a finite abelian group is linear.
         # Its image is cyclic, so one value generates its character field;

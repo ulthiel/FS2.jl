@@ -71,6 +71,14 @@ To scan a range of orders in the GAP Small Groups Library:
 scan_smallgroups_fs2(1:1000; q=2, log_dir="results")
 ```
 
+To scan the Small Groups Library for the conductor-attainment property, use:
+
+```julia
+scan_smallgroups_cs(1:1000; log_dir="results")
+```
+
+This scan skips prime-power orders because CS holds for nilpotent groups.
+
 ## Testing
 
 ```julia

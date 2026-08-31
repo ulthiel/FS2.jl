@@ -356,7 +356,8 @@ function scan_ctbllib_fs2(;
     end
 
     false_counter = 0
-    p = show_progress ? Progress(length(names); desc=scan_id) : nothing
+    # Count the separator when ProgressMeter sizes the bar for long ETAs.
+    p = show_progress ? Progress(length(names); desc=scan_id * " ") : nothing
     
     if !isnothing(log_dir) 
         metadata = merge(metadata, 
@@ -449,7 +450,8 @@ function scan_smallgroups_fs2(
     end
 
     false_counter = 0
-    p = show_progress ? Progress(num_groups; desc=scan_id) : nothing
+    # Count the separator when ProgressMeter sizes the bar for long ETAs.
+    p = show_progress ? Progress(num_groups; desc=scan_id * " ") : nothing
     
     if !isnothing(log_dir) 
         metadata = merge(metadata, 
