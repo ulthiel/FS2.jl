@@ -14,7 +14,7 @@ ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [compat]
-CSV = "0.10.16"
+CSV = "0.10.16, 1.0"
 Dates = "1.10.0"
 FileWatching = "1.10.0"
 Literate = "2.21.0"
